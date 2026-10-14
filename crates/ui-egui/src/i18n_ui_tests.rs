@@ -66,6 +66,7 @@ fn window_chrome_renders_in_the_active_language() {
         ("de", "BROWSER", "Auswahlfilter", "Flächen"),
         ("ko", "브라우저", "선택 필터", "면"),
         ("ru", "БРАУЗЕР", "Фильтр выделения", "Грани"),
+        ("fr", "NAVIGATEUR", "Filtre de sélection", "Faces"),
         ("uk", "БРАУЗЕР", "Фільтр виділення", "Грані"),
     ] {
         let mut h = Harness::new();

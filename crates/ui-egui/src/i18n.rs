@@ -34,11 +34,12 @@ impl Catalog {
 static ENGLISH: Catalog = Catalog::new("en", "English", include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/../../assets/locales/en.json")));
 static JAPANESE: Catalog = Catalog::new("ja", "日本語", include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/../../assets/locales/ja.json")));
 static GERMAN: Catalog = Catalog::new("de", "Deutsch", include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/../../assets/locales/de.json")));
+static FRENCH: Catalog = Catalog::new("fr", "Français", include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/../../assets/locales/fr.json")));
 static KOREAN: Catalog = Catalog::new("ko", "한국어", include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/../../assets/locales/ko.json")));
 static RUSSIAN: Catalog = Catalog::new("ru", "Русский", include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/../../assets/locales/ru.json")));
 static UKRAINIAN: Catalog = Catalog::new("uk", "Українська", include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/../../assets/locales/uk.json")));
 static CHINESE: Catalog = Catalog::new("zh", "中文", include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/../../assets/locales/zh.json")));
-pub const LOCALES: &[&Catalog] = &[&ENGLISH, &JAPANESE, &GERMAN, &KOREAN, &RUSSIAN, &UKRAINIAN, &CHINESE];
+pub const LOCALES: &[&Catalog] = &[&ENGLISH, &JAPANESE, &GERMAN, &FRENCH, &KOREAN, &RUSSIAN, &UKRAINIAN, &CHINESE];
 
 pub fn is_supported(id: &str) -> bool {
     LOCALES.iter().any(|catalog| catalog.id == id)
@@ -189,11 +190,11 @@ mod tests {
     }
 
     /// Catalogs delivered complete. English is the source catalog; Japanese was completed
-    /// upstream and Chinese lands complete here. German, Korean, Russian and Ukrainian are
-    /// partial (German and Korean predate the coverage guards; Russian and Ukrainian are kept
-    /// partial so a new label doesn't need a seventh translation), so their gaps fall back to
-    /// English and are reported by `cargo xtask i18n` without failing the build, while nothing
-    /// in the complete catalogs may regress.
+    /// upstream and Chinese lands complete here. German, Korean, Russian, French and Ukrainian
+    /// are partial (German and Korean predate the coverage guards; Russian, French and Ukrainian
+    /// are kept partial so a new label doesn't need more translations), so their gaps fall back
+    /// to English and are reported by `cargo xtask i18n` without failing the build, while
+    /// nothing in the complete catalogs may regress.
     const COMPLETE: &[&str] = &["ja", "zh"];
 
     /// `text()` falls back to English silently, so a message a complete locale never received is
@@ -261,6 +262,7 @@ mod tests {
             ("de", "Flansch", "Zebra-Analyse", "Bewegungsuntersuchung"),
             ("ko", "플랜지", "얼룩말줄무늬 분석", "운동 연구"),
             ("ru", "Фланец", "Зебра-анализ", "Исследование движения"),
+            ("fr", "Bord tombé", "Analyse zébrée", "Étude de mouvement"),
             ("uk", "Фланець", "Зебра-аналіз", "Дослідження руху"),
         ];
         for (lang, flange, zebra, motion) in cases {
@@ -342,6 +344,7 @@ mod tests {
             ("ja", "プロファイル", "点"),
             ("ko", "프로파일", "점"),
             ("ru", "Профиль", "Точки"),
+            ("fr", "Profil", "Points"),
             ("uk", "Профіль", "Точки"),
         ] {
             let locale = Locale::for_language(lang);
@@ -366,6 +369,7 @@ mod tests {
             ("ja", "構築ジオメトリ"),
             ("ko", "구성 형상"),
             ("ru", "Вспомогательная геометрия"),
+            ("fr", "Géométries de construction"),
             ("uk", "Конструкційна геометрія"),
         ];
         for (lang, want) in rows {
@@ -438,6 +442,29 @@ mod tests {
         assert_eq!(ru.dynamic("Parameters (5)"), "Параметры (5)");
         assert_eq!(ru.dynamic("4 degrees of freedom"), "Степеней свободы: 4");
         assert_eq!(ru.dynamic("Sketch of bracket"), "Sketch of bracket");
+    }
+
+    #[test]
+    fn french_catalog_translates_keys_labels_and_browser_patterns() {
+        let fr = Locale::for_language("fr");
+        assert_eq!(fr.name(), "Français");
+        assert!(is_supported("fr"));
+        assert_eq!(fr.text("ui.preferences"), "Préférences");
+        assert_eq!(fr.label("Extrude"), "Extrusion");
+        assert_eq!(fr.label("Fillet"), "Congé");
+        assert_eq!(fr.label("CREATE SKETCH"), "CRÉER UNE ESQUISSE");
+        assert_eq!(fr.label("NonExistentKey"), "NonExistentKey");
+        // French puts a no-break space before the two-part punctuation marks.
+        assert_eq!(fr.format("document.save_changes", &[("name", "My {design}")]), "Enregistrer les modifications de My {design}\u{a0}?");
+        assert_eq!(fr.format("dialog.selected_count", &[("count", "2")]), "↖ 2 sélectionné(s)");
+        assert_eq!(fr.dynamic("Sketch1"), "Esquisse1");
+        assert_eq!(fr.dynamic("Body2"), "Corps2");
+        assert_eq!(fr.dynamic("Component12"), "Composant12");
+        assert_eq!(fr.dynamic("Units: mm"), "Unités\u{a0}: mm");
+        assert_eq!(fr.dynamic("Precision: 3"), "Précision\u{a0}: 3");
+        assert_eq!(fr.dynamic("Parameters (5)"), "Paramètres (5)");
+        assert_eq!(fr.dynamic("4 degrees of freedom"), "4 degrés de liberté");
+        assert_eq!(fr.dynamic("Sketch of bracket"), "Sketch of bracket");
     }
 
     #[test]
