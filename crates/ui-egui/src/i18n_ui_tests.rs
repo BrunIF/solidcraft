@@ -28,7 +28,8 @@ fn sketch_palette_profile_and_points_rows_show_their_own_translation() {
     // i18n::tests::id_labels_resolve_to_their_own_translation_not_an_english_fallback for the
     // lookup itself). A broken id falls back to English silently rather than failing loudly, so
     // check the word actually on screen in each locale, not just that something renders.
-    for (lang, profile, points) in [("de", "Profil", "Punkte"), ("ja", "プロファイル", "点"), ("ko", "프로파일", "점"), ("uk", "Профіль", "Точки")] {
+    for (lang, profile, points) in [("de", "Profil", "Punkte"), ("ja", "プロファイル", "点"), ("ko", "프로파일", "점"), ("uk", "Профіль", "Точки")]
+    {
         let mut h = Harness::new();
         h.app.preferences.language = lang.into();
         h.app.home.open = false;

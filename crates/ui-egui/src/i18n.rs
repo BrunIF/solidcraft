@@ -337,9 +337,13 @@ mod tests {
     /// non-empty string" would not catch that.
     #[test]
     fn id_labels_resolve_to_their_own_translation_not_an_english_fallback() {
-        for (lang, profile, points) in
-            [("de", "Profil", "Punkte"), ("ja", "プロファイル", "点"), ("ko", "프로파일", "점"), ("ru", "Профиль", "Точки"), ("uk", "Профіль", "Точки")]
-        {
+        for (lang, profile, points) in [
+            ("de", "Profil", "Punkte"),
+            ("ja", "プロファイル", "点"),
+            ("ko", "프로파일", "점"),
+            ("ru", "Профиль", "Точки"),
+            ("uk", "Профіль", "Точки"),
+        ] {
             let locale = Locale::for_language(lang);
             assert_eq!(locale.label("ui.palette_profile"), profile, "{lang}");
             assert_eq!(locale.label("ui.palette_points"), points, "{lang}");
