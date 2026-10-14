@@ -266,6 +266,13 @@ pub fn paint(p: &Painter, r: Rect, name: &str, ink: Color32, fill: Color32, acce
                 pen.line(&[(17.0, y), (21.0, y)], ink);
             }
         }
+        // Agent chat: a speech bubble with three dots.
+        "agent_chat" => {
+            pen.closed(&[(4.0, 5.0), (20.0, 5.0), (20.0, 16.0), (11.0, 16.0), (6.5, 20.0), (7.5, 16.0), (4.0, 16.0)], ink);
+            for x in [8.5, 12.0, 15.5] {
+                pen.dot(x, 10.5, ink);
+            }
+        }
         // Help: a question mark in a ring.
         "help" => {
             pen.circle(12.0, 12.0, 9.0, Color32::TRANSPARENT, ink);

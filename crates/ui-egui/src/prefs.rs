@@ -245,6 +245,10 @@ pub struct Prefs {
     pub offer_stand_up: bool,
     /// What a middle-button double-click in the view does: `home`, `fit` or `off`.
     pub middle_double_click: String,
+    /// Show the agent chat panel (desktop; docs/design/in-app-agent-chat.md).
+    pub agent_chat_enabled: bool,
+    /// The ACP agent the chat starts; empty: the first one found.
+    pub agent_command: String,
 }
 
 /// What a middle-button double-click in the view does.
@@ -303,6 +307,8 @@ impl Default for Prefs {
             up_axis: "z".into(),
             offer_stand_up: true,
             middle_double_click: "home".into(),
+            agent_chat_enabled: false,
+            agent_command: String::new(),
         }
     }
 }
@@ -394,6 +400,8 @@ fn defaults(app: &mut SolveApp, page: usize) {
             p.angle_decimals = d.angle_decimals;
             app.ui.dark = true;
             app.ui.agent_cursor = Default::default();
+            p.agent_chat_enabled = d.agent_chat_enabled;
+            p.agent_command = d.agent_command;
             app.autosave_minutes = 5.0;
             set_autosave(app);
         }
@@ -901,6 +909,21 @@ fn page(app: &mut SolveApp, ui: &mut egui::Ui, t: &Tokens) {
             ui.label("");
             ui.add_enabled(s.show, egui::Checkbox::new(&mut s.follow_camera, crate::i18n::tr_label("Follow the camera (Look At sketches)")));
             ui.end_row();
+            ui.label(app.tr("ui.agent_chat"));
+            let desktop = cfg!(not(target_arch = "wasm32"));
+            ui.add_enabled(desktop, egui::Checkbox::new(&mut app.preferences.agent_chat_enabled, crate::i18n::tr("ui.agent_chat_enable")));
+            ui.end_row();
+            if desktop {
+                ui.label(app.tr("ui.agent_chat_command"));
+                ui.add_enabled(
+                    app.preferences.agent_chat_enabled,
+                    egui::TextEdit::singleline(&mut app.preferences.agent_command).hint_text("claude-agent-acp").desired_width(240.0),
+                );
+                ui.end_row();
+                note(ui, app.tr("ui.agent_chat_command_hint"));
+            } else {
+                note(ui, app.tr("ui.agent_chat_desktop_only"));
+            }
         }
         1 => {
             ui.label(app.tr_label("Pan, zoom, orbit"));

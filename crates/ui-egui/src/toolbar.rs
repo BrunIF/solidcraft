@@ -226,6 +226,9 @@ pub fn app_bar(app: &mut SolveApp, ui: &mut egui::Ui) {
             app.ui.dark = !app.ui.dark;
             app.preferences.theme = if app.ui.dark { "dark" } else { "light" }.into();
         }
+        if app.preferences.agent_chat_enabled && click(ui, "agent_chat", app.tr("ui.agent_chat"), true) {
+            app.agent_chat.open = !app.agent_chat.open;
+        }
         if click(ui, "help", app.tr("ui.help"), true) {
             app.help.menu = !app.help.menu;
             let at = ui.ctx().input(|i| i.pointer.latest_pos()).map_or(300.0, |p| p.x);
